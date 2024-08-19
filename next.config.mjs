@@ -11,6 +11,9 @@ const nextConfig = {
       transpilePackages: ['next-mdx-remote'],
       basePath: "/tall_guy",
       output: "export",
+      images: {
+        unoptimized: true,
+      },
 };
 
 export default nextConfig;
