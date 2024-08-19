@@ -9,6 +9,8 @@ const nextConfig = {
         return config
       },
       transpilePackages: ['next-mdx-remote'],
+      basePath: "/tall_guy",
+      output: "export",
 };
 
 export default nextConfig;
