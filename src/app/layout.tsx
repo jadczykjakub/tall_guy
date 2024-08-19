@@ -3,8 +3,6 @@ import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/app/components/Navigation";
 import Footer from "@/app/components/Footer";
-import { ThemeProvider } from "next-themes";
-import { NextUIProvider } from "@nextui-org/system";
 import { Providers } from "./components/Providers";
 
 const font = Open_Sans({ subsets: ["latin"] });
