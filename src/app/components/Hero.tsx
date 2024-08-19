@@ -6,7 +6,7 @@ export default function Hero() {
       <h1>Jakub Jadczyk</h1>
       <h2>Full-Stack developer</h2>
       <p>
-        I love programming and sharing knowledge about the topics I'm learning.
+        I love programming and sharing knowledge about the topics I am learning.
       </p>
     </div>
   );
