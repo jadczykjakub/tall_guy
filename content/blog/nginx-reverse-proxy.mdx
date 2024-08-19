@@ -8,13 +8,14 @@ shortDescription: 'How to use reverse proxy to controll flow in our multi docker
 
 ---
 
+## Tools introduction
 
-### Nginx
+Nginx
 
 Nginx (engine X) is open-source web server software used for reverse proxy, load balancing, caching and many others.
 In this post I will show how to handle reverse proxy with 2 examples. 
 
-### Reverse proxy
+Reverse proxy
 A reverse proxy is a server positioned in front of web servers that directs client requests (such as those from web browsers) to the appropriate web servers. Reverse proxies are commonly used to enhance security, performance, and reliability.
 
 ![reverse proxy diagram1](/blog/nginx-reverse-proxy/1.png)
@@ -25,9 +26,9 @@ On the server, we need to expose our application on the default port 80 because 
 
 An Nginx reverse proxy will catch all requests on port 80 and redirect them as needed. This way, we can have our application running on localhost:3000, and the reverse proxy will redirect requests to that address.
 
-```markdown
-> Why can't I expose the application on port 80 so that internet calls go directly to my server?
-```
+## Why we use
+
+<Question text="Why can't I expose the application on port 80 so that internet calls go directly to my server" />
 
 That's a great question.
 
@@ -46,9 +47,7 @@ Using Nginx as a reverse proxy helps address these issues effectively.
 
 So, we now understand that using a reverse proxy is important even if we have just one web server.
 
-```markdown
-> But what if we have several web servers?
-```
+<Question text="But what if we have several web servers" />
 
 In this case, using a reverse proxy becomes even more important.
 
@@ -57,9 +56,9 @@ In this case, using a reverse proxy becomes even more important.
 
 We can control which routes go to which application. This is very useful when we have multiple services in Docker. One of these services can be Nginx, which is in charge of routing.
 
-### Example Nginx with one node server
+## Example Nginx with one node server
 
-#### Structure of our files
+Structure of our files
 
 ```
 📦nginx_docker  
@@ -73,9 +72,7 @@ We can control which routes go to which application. This is very useful when we
  ┗ 📜docker-compose.yml
 ```
 
-#### Nginx
-
-Dockerfile
+Nginx in dockerfile
  
 Here we copy official image of Nginx and replace default config with our config.
 
@@ -86,7 +83,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 ```
 
-##### nginx.conf
+nginx.conf
 Here, we take requests listening on the default port 80 at the root (/) and redirect them to **proxy_pass http://node:3000;**. This configuration redirects calls to the Node.js server defined in the **docker-compose.yml** file on port 3000, where our app is listening inside the Docker container.
 
 ```nginx
@@ -106,7 +103,7 @@ http {
 }
 ```
 
-#### Node service1 
+Node service1 
 
 Dockerfile
 Here we install and run node instance
@@ -140,7 +137,7 @@ app.listen(port, () => {
 });
 ```
 
-#### Docker compose
+Docker compose
 This is the most important file that connects our services. In the **docker-compose.yml**, we define which services need to be run, their relationships, and expose them to be reachable from the outside.
 
 By default, when we have services in **docker-compose** and run them with **docker-compose up**, there is a connection between them, allowing them to communicate.
@@ -167,7 +164,7 @@ We only expose one access point to the world.
 
 ![reverse proxy diagram3](/blog/nginx-reverse-proxy/3.png)
 
-### Example with multiple node servers
+## Example with multiple node servers
 
 Structure of our file
 ```
@@ -190,9 +187,7 @@ Structure of our file
  ┗ 📜docker-compose.yml
 ```
 
-#### Nginx
-
-Dockerfile
+Nginx with dockerfile
  
 Here we copy official image of Nginx and replace default config with our config.
 
@@ -245,7 +240,7 @@ http {
 
 ```
 
-#### Node services
+Node services
 
 Dockerfile (the same for all of them)
 ```docker
@@ -263,6 +258,7 @@ CMD ["node", "index.js"]
 ```
 
 node1 index.js
+
 ```js
 const express = require('express');
 
@@ -328,8 +324,7 @@ app.listen(port, () => {
 });
 ```
 
-
-#### Docker compose
+Docker compose
 
 ```yml
 version: '3'
@@ -355,13 +350,11 @@ services:
       - node3
 ```
 
-### Internal and external communication
+Internal and external communication
 
 Currently, we can access different services based on the slug we use. For example, typing **example.com/node1** will call the node1 service, and the same applies to node2 and node3. This means we can communicate with services from the internet using the appropriate slug. However, there is no direct access from the internet to call these services (unless we expose ports to the outside).
 
-```markdown
-> But what if we want the services to communicate with each other?
-```
+<Question text="But what if we want the services to communicate with each other" />
 
 Fortunately, Docker Compose enables this functionality by default. Simply starting our project with a **docker-compose.yml** file allows our services to have connections and communicate within their internal network.
 
@@ -384,7 +377,7 @@ app.get('/node3/getFromNode1', async (req, res) => {
   });
 ```
 
-#### Conclusion
+## Conclusion
 Nginx is an important part of modern web development. It's important to remember that reverse proxy is just one of its many useful features. 
 
 

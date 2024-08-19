@@ -45,6 +45,7 @@ body {
   color: var(--foreground);
 }
 
-p {
+p,
+li {
   color: var(--foreground-text);
 }

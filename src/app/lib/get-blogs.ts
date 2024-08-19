@@ -30,6 +30,7 @@ export const getBlogs = () => {
       metadata: data as Metadata,
       content,
       slug: post.replace(/\.mdx?$/, ''),
+      tableOfContents:  getTableOfContent(content)
     };
   });
 };
@@ -49,4 +50,18 @@ export function getLatestBlogs() {
 
   // Return the latest 3 blogs
   return allBlogs.slice(0, 3);
+}
+
+
+function getTableOfContent(markdown: string) {
+  const regXHeader = /#{2,6}.+/g;
+  const headingArray = markdown.match(regXHeader)
+    ? markdown.match(regXHeader)
+    : [];
+  return headingArray?.map((heading) => {
+    return {
+      level: heading.split("#").length - 1 - 2, // we starts from the 2nd heading that's why we subtract 2 and 1 is extra heading text
+      heading: heading.replace(/#{2,6}/, "").trim(),
+    };
+  });
 }

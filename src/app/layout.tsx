@@ -18,7 +18,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className="scroll-smooth scroll-pt-[calc(5rem+20px)]"
+    >
       <body className={font.className}>
         <Providers>
           <div className="mx-auto max-w-10xl flex flex-col gap-4 md:gap-16">

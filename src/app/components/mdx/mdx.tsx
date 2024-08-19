@@ -20,6 +20,7 @@ import ReactMarkdown from "react-markdown";
 // } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import Question from "@/app/components/blog/Question";
 
 const CodeBlock = (props: any) => {
   let { className } = props;
@@ -54,7 +55,7 @@ const mdxComponents: MDXComponents = {
     </h1>
   ),
   h2: ({ className, ...props }) => (
-    <h2 className={cn(className)}>
+    <h2 className={cn(className, "font-bold text-xl mb-4")}>
       <a
         href={`#${slugify(props.children as string)}`}
         id={slugify(props.children as string)}
@@ -64,7 +65,7 @@ const mdxComponents: MDXComponents = {
     </h2>
   ),
   h3: ({ className, ...props }) => (
-    <h3 className={cn(className, "font-bold text-xl mb-4")} {...props}>
+    <h3 className={cn(className, "font-bold text-l mb-4")} {...props}>
       <a
         href={`#${slugify(props.children as string)}`}
         id={slugify(props.children as string)}
@@ -135,6 +136,7 @@ const mdxComponents: MDXComponents = {
   img: (props: any) => (
     <NextImage layout="fill" className="!relative" {...props} />
   ),
+  Question: ({ className, ...props }) => <Question {...props}></Question>,
 };
 
 export function CustomMDX({
