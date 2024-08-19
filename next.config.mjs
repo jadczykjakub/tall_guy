@@ -9,10 +9,13 @@ const nextConfig = {
         return config
       },
       transpilePackages: ['next-mdx-remote'],
-      // basePath: "/tall_guy",
+      basePath: "/tall_guy",
       output: "export",
       images: {
         unoptimized: true,
+      },
+      experimental: {
+        appDir: true,
       },
 };
 
