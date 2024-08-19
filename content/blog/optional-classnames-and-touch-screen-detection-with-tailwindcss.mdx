@@ -1,0 +1,80 @@
+---
+title: 'Optional Classnames and Touch Screen Detection with TailwindCSS'
+publishedAt: 'April 3, 2024'
+author: 'Jakub Jadczyk'
+published: true
+imageSrc: 'blog/optional-classnames/placeholder.png'
+shortDescription: 'Clean way to use conditional classnames and detect if user is using touch screen device'
+---
+
+
+In this article, I’ll show you a clear method for applying conditional classes in TailwindCSS using the following libraries:
+
+- classnames
+- tailwind-merge
+
+### A Less Readable Example
+
+Let's start with a less readable example of conditional class handling in Tailwind:
+
+```jsx
+className={`${isScrolled ? "h-20" : "h-24"}`}
+```
+
+This approach can quickly become difficult to manage, especially as the number of classes and conditions increases.
+
+### Creating a Helper Function
+To improve readability and maintainability, we can create a helper function:
+
+```jsx
+import classnames from 'classnames'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...args: classnames.ArgumentArray) {
+  return twMerge(classnames(...args))
+}
+```
+
+### A More Readable Example
+
+Now, using our helper function, we can rewrite the previous example in a much more readable way:
+
+```js
+className={cn('h-24', {
+	'h-20': isScrolled,
+})}
+```
+
+This approach enforces a standard writing style across your application, which is especially helpful when dealing with many classes and conditional logic.
+
+### Detecting Touch Screens with TailwindCSS 
+
+With CSS, we can detect whether a user’s device has a touch screen or a mouse pointer. We can use this information to create custom styles for both mobile and desktop environments.
+
+This is particularly useful when dealing with hover states. On mobile devices, where hover interactions don’t exist, relying on hover states can cause issues.
+
+### Extending TailwindCSS Configuration
+
+In your **tailwind.config.ts**, you can add custom screen definitions to handle touch and hover-specific styles:
+
+```css
+theme: {
+  extend: {
+    screens: {
+      'touchScr': { 'raw': '(hover: none)' },
+      'hoverScr': { 'raw': '(hover: hover)' },
+    },
+
+  },
+},
+```
+
+### Applying Custom Styles
+
+Now, you can use these custom screens as classes in your components:
+
+```jsx
+<div className="touchScr:bg-black hoverScr:bg-red"">
+```
+
+This method allows you to detect mobile devices and create custom styles tailored to both touch and non-touch environments.

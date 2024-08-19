@@ -1,0 +1,60 @@
+---
+title: 'Non pimitive values in useState'
+publishedAt: 'April 3, 2024'
+author: 'Jakub Jadczyk'
+published: true
+imageSrc: 'blog/non-pimitive-values-in-usestate/placeholder.png'
+shortDescription: 'Comparing Non-Primitive Values and Their Implications for useState in React'
+---
+
+Let's start by understanding what happens when we compare primitive and non-primitive values in JavaScript.
+
+
+### Comparing Primitive Values
+
+```js
+const a = "test"; const b = "test"; 
+console.log(a === b); // Output: true
+```
+
+In this example, since both **a** and **b** hold the same string value, the comparison returns **true**.
+
+### Comparing Non-Primitive Values (Objects)
+
+```js
+const a =  {
+	title: "test"
+};
+
+const b = {
+	title: "test"
+}
+
+console.log(a === b);
+// output: false
+```
+
+The result is **false** because, in JavaScript, objects (which are non-primitive values) are compared by reference, not by value. This means that even though **a** and **b** contain identical properties and values, they are stored in different locations in memory. Since they reference different objects, the comparison returns **false**, which is expected behavior.
+
+### Implications for useState
+
+### Overwriting Primitive Values
+
+```js
+const [value, setValue] = useState('test');
+
+const handleButton = () => setValue('test');
+```
+
+When you click **handleButton**, React checks whether the **value** state has changed. Since you're setting the state to the same primitive value ('test'), React recognizes that the value hasn't changed, so it doesn't trigger a re-render.
+### Overwriting Non-Primitive Values
+
+```js
+const [value, setValue] = useState({ title: "test" });
+
+const handleButton = () => setValue({title: "test"});
+```
+
+In this case, every time you click **handleButton**, React will trigger a re-render. Even though the new object has the same content as the previous one, React compares objects by reference, not by value. Since each **setValue** call creates a new object in memory, React interprets it as a different value and re-renders the component.
+
+It's important to be aware of this behavior, as unnecessary re-renders can negatively impact performance.

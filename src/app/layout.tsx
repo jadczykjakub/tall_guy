@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
+import Navigation from "@/app/components/Navigation";
+import Footer from "@/app/components/Footer";
+import { ThemeProvider } from "next-themes";
+import { NextUIProvider } from "@nextui-org/system";
+import { Providers } from "./components/Providers";
 
-const inter = Inter({ subsets: ["latin"] });
+const font = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,8 +20,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={font.className}>
+        <Providers>
+          <div className="mx-auto max-w-10xl flex flex-col gap-4 md:gap-16">
+            <Navigation />
+            <div className="my-4 px-4 md:px8 max-w-7xl mx-auto">{children}</div>
+            <Footer />
+          </div>
+        </Providers>
+      </body>
     </html>
   );
 }
