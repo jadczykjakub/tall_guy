@@ -7,11 +7,20 @@ import ScrollProgressBar from "@/app/components/blog/ScrollProgressBar";
 import { stringToSlug } from "@/app/lib/utils";
 import Link from "next/link";
 import { cn } from "@/app/lib/utils";
+import { Metadata } from "next";
 
 export function generateStaticParams() {
   const blogs = getBlogs();
 
   return blogs.map((item) => ({ slug: item.slug }));
+}
+
+export function generateMetadata({ params }: any): Metadata {
+  const blog = getBlogs().find((item) => item.slug === params.slug);
+  return {
+    title: blog?.metadata.title,
+    description: blog?.metadata.shortDescription,
+  };
 }
 
 export default function page({ params }: { params: any }) {

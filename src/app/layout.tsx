@@ -8,6 +8,7 @@ import { Providers } from "./components/Providers";
 const font = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://jadczykjakub.github.io"),
   title: {
     default: "Tallguy Jakub Jadczyk coding enthusiast",
     template: "%s - Tallguy Jakub Jadczyk coding enthusiast",
