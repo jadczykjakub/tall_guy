@@ -1,0 +1,230 @@
+---
+title: 'Global Error Handling in Express.js'
+publishedAt: 'August 20, 2024'
+author: 'Jakub Jadczyk'
+published: true
+imageSrc: 'blog/global-error-handling-express/placeholder.png'
+shortDescription: 'Effective and centralized error handling is crucial for maintaining the stability of any application'
+---
+
+Effective and centralized error handling is crucial for maintaining the stability of any application. By managing errors centrally, you simplify code maintenance and enhance the overall reliability of your project. In this blog post, I will walk you through the steps required to **create a centralized error-handling system in an Express.js** application.
+
+Before diving into the content, it's essential to have a basic understanding of Express.js.
+
+## Handling Synchronous Errors
+Let's start by handling errors in a simple synchronous function:
+
+```jsx
+app.get('/', (req: Request, res: Response, next: NextFunction) => {
+  throw new Error('This is our default error');
+});
+```
+
+When you call the **GET "/"** endpoint, you'll receive an error response like this:
+
+```
+Error: This is our default error at C:\workspace\playground\errorHandlingExpressSkeleton\index.ts:56:9 at newFn.........
+```
+
+However, in most cases, we work with asynchronous functions in our controllers.
+
+```jsx
+app.get('/', async (req: Request, res: Response, next: NextFunction) => {
+  throw new Error('This is our default error');
+});
+```
+
+In JavaScript, an asynchronous function returns a Promise. If an error occurs within this function and is not caught, it will be handled by the Promise and won't be passed to Express's error-handling middleware by default.
+
+## Solution: Using Try-Catch
+To handle errors in an asynchronous function, you typically use a try-catch block:
+
+```jsx
+app.get('/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+        throw new Error('This is our default error');
+    } catch (error) {
+        next(error);
+    }
+});
+```
+
+<Question text="I used next() to move to the next middleware. How does it work with error handling" />
+
+In Express, next() is typically used within middleware functions to pass control to the next middleware in the stack. When you call next() without any arguments, it simply moves on to the next middleware:
+
+```jsx
+app.use((req, res, next) => {
+    // Do something
+    next(); // Pass control to the next middleware function
+});
+```
+
+However, if you pass an argument to **next()** typically an error object Express behaves differently:
+
+```jsx
+next(new Error('Something went wrong')) 
+```
+
+Express interprets it as an error and **skips all remaining non-error-handling middleware**. Instead, it immediately passes control to the error-handling middleware, allowing you to handle errors in a centralized way.
+
+
+## Solution with custom wrapper
+
+To avoid repetitive try-catch blocks in every asynchronous controller, you can create a custom wrapper function:
+
+```jsx
+const catchAsync = fn => {
+    return (req, res, next) => {
+        Promise.resolve(fn(req, res, next)).catch(next);
+    };
+};
+```
+
+You can then use this wrapper in your controllers:
+
+```jsx
+app.get('/', catchAsync(async (req, res, next) => {
+    throw new Error('This is our default error');
+}));
+```
+
+With this approach, there's no need to manually call next() in every route handler. The catchAsync wrapper automatically catches any errors and passes them to the next middleware.
+
+## Solution with library
+
+In the JavaScript ecosystem, there's often a library to simplify common tasks. For error handling in Express, you can use the express-async-errors package.
+
+Install it via npm:
+```jsx
+npm i express-async-errors
+```
+
+Then import it in your main file:
+```jsx
+import "express-async-errors";
+```
+
+This library automatically catches asynchronous errors and forwards them to the next() function, eliminating the need for try-catch blocks or wrappers in your route handlers.
+
+## Custom Error class
+
+By default, the error handler returns a 500 status code along with an error object:
+```jsx
+res.status(500).json({ error: err.message });
+```
+This response is too generic to build a robust logging or error display system. A better approach is to create a custom error handler, starting with a custom error class:
+
+```jsx
+class ApiError extends Error {
+    statusCode: number;
+    isOperational: boolean;
+  
+    constructor(statusCode: number, message: string | undefined, isOperational = true, stack = '') {
+      super(message);
+      this.statusCode = statusCode;
+      this.isOperational = isOperational;
+      if (stack) {
+        this.stack = stack;
+      } else {
+        Error.captureStackTrace(this, this.constructor);
+      }
+    }
+  }
+  
+  export default ApiError;
+```
+
+Now, you can throw intentional errors using ApiError
+```jsx
+app.get('/', async (req: Request, res: Response, next: NextFunction) => {
+
+  throw new ApiError(400, 'This is our default errorsss')
+
+});
+```
+
+## Global error handler middleware
+To handle all errors centrally, create an error handler middleware:
+
+
+```jsx
+export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+    let { statusCode, message } = err;
+    if (config.env === 'production' && !err.isOperational) {
+      statusCode = httpStatus.INTERNAL_SERVER_ERROR;
+      message = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
+    }
+  
+    res.locals.errorMessage = err.message;
+
+    if(config.env === 'development'){
+      res.locals.stack = err.stack;
+    }
+
+  
+    const response = {
+      code: statusCode,
+      message,
+      ...(config.env === 'development' && { stack: err.stack })
+    };
+  
+    res.status(statusCode).send(response);
+  };
+```
+
+To enable this error handler, include it after your route handlers:
+
+```jsx
+app.use(errorHandler);
+```
+
+This ensures that all errors, including those thrown intentionally, are handled uniformly.
+
+```jsx
+app.get('/', async (req: Request, res: Response, next: NextFunction) => {
+  throw new ApiError(httpStatus.BADREQUEST, 'This is our default errorsss')
+});
+
+```
+
+**httpStatus.BADREQUEST** is coming from http-status library
+
+This is how our error is logged:
+```
+{
+    "code": 400,
+    "message": "This is our default errorsss",
+    "stack": "Error: This is our default errorsss\n    at C:\\workspace\\playground\\errorHandlingExpressSkeleton\\index.ts:57:9\n....
+}
+```
+
+
+## Transforming Other Errors into ApiError
+
+For errors not thrown as instances of ApiError (e.g., errors from a database), you can create an error converter:
+```jsx
+export const errorConverter: ErrorRequestHandler = (err, req, res, next) => {
+  let error = err;
+  if (!(error instanceof ApiError)) {
+    const statusCode =
+      error.statusCode 
+        ? httpStatus.BAD_REQUEST
+        : httpStatus.INTERNAL_SERVER_ERROR;
+    const message = error.message || httpStatus[statusCode];
+    error = new ApiError(statusCode, message, false, err.stack);
+  }
+  next(error);
+};
+```
+
+Include this converter before the error handler to ensure all errors are processed consistently
+
+```jsx
+app.use(errorConverter);
+app.use(errorHandler);
+```
+
+## Conclusion
+
+By implementing these strategies, you can create a robust and **centralized error-handling system** in your Express.js application. This not only improves the readability and maintainability of your code but also ensures a consistent approach to error management across your entire project.

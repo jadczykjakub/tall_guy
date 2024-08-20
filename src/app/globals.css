@@ -16,7 +16,7 @@
   }
 
   strong {
-    @apply text-primary font-bold;
+    @apply text-white bg-primary px-1 rounded-sm font-bold;
   }
 
   pre {

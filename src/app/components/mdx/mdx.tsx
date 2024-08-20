@@ -111,14 +111,14 @@ const mdxComponents: MDXComponents = {
     </h6>
   ),
   ul: ({ className, ...props }) => (
-    <ul className={cn("mb-6", className)} {...props} />
+    <ul className={cn("mb-6 list-disc pl-6", className)} {...props} />
   ),
 
   li: ({ className, ...props }) => <li {...props} className="mb-4 " />,
   blockquote: ({ className, ...props }) => (
     <blockquote
       className={cn(
-        "mt-6 border-l-2 border-slate-300 pl-6 italic text-slate-800 [&>*]:text-slate-600",
+        "mt-6 border-l-2 border-slate-300 pl-6 italic text-slate-800 [&>*]:text-slate-600 opacity-25",
         className,
       )}
       {...props}
@@ -134,7 +134,7 @@ const mdxComponents: MDXComponents = {
   code: (props: any) => <CodeBlock {...props} />,
   pre: Pre,
   img: (props: any) => (
-    <NextImage layout="fill" className="!relative" {...props} />
+    <NextImage layout="fill" className="!relative md:!w-2/3" {...props} />
   ),
   Question: ({ className, ...props }) => <Question {...props}></Question>,
 };

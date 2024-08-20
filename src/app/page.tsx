@@ -4,6 +4,7 @@ import Link from "next/link";
 import BlogCard from "@/app/components/blog/BlogCard";
 import Hero from "@/app/components/Hero";
 import BlogIcon from "@/../public/svg/blog-icon.svg";
+import readingTime from "reading-time";
 
 export default function page() {
   const latestBlog = getLatestBlogs();
@@ -16,15 +17,17 @@ export default function page() {
         <h2 className="text-center">Recent posts</h2>
         <div className="grid gap-8 justify-items-center">
           {latestBlog.map((item, index) => {
+            const statsTime = readingTime(item.content);
             return (
               <BlogCard
                 image={item.metadata.imageSrc}
-                minutes={22}
+                minutes={Math.ceil(statsTime.minutes)}
                 slug={item.slug}
                 title={item.metadata.title}
-                words={223}
+                words={statsTime.words}
                 ltr={index % 2 === 0}
                 key={index}
+                description={item.metadata.shortDescription}
               />
             );
           })}
