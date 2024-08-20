@@ -3,6 +3,11 @@ import { getBlogs } from "../lib/get-blogs";
 import Link from "next/link";
 import BlogCard from "../components/blog/BlogCard";
 import readingTime from "reading-time";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blog",
+};
 
 export default function page() {
   const blogs = getBlogs()
