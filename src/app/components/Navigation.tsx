@@ -69,7 +69,11 @@ export default function Navigation() {
             <ThemeSwitcher setIsNavOpen={setIsNavOpen} />
           </nav>
           <div className="dark:text-black text-white">
-            <Hamburger onToggle={handleHamburger} toggled={isNavOpen} />
+            <Hamburger
+              onToggle={handleHamburger}
+              toggled={isNavOpen}
+              easing="transform"
+            />
           </div>
         </div>
       </div>
