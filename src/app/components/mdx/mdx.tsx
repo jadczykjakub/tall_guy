@@ -134,7 +134,12 @@ const mdxComponents: MDXComponents = {
   code: (props: any) => <CodeBlock {...props} />,
   pre: Pre,
   img: (props: any) => (
-    <NextImage layout="fill" className="!relative md:!w-2/3" {...props} />
+    <NextImage
+      layout="fill"
+      className="!relative md:!w-2/3"
+      {...props}
+      src={`${process.env.PUBLIC_BASE_URL}/${props.src}`}
+    />
   ),
   Question: ({ className, ...props }) => <Question {...props}></Question>,
 };
