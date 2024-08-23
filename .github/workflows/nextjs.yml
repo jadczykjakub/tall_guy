@@ -79,6 +79,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
+        env:
           PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
 
   # Deployment job
