@@ -1,0 +1,263 @@
+---
+title: 'Tracking Active Users on Specific Routes Using WebSockets'
+publishedAt: 'August 23, 2024'
+author: 'Jakub Jadczyk'
+published: true
+imageSrc: 'blog/tracking-active-users/placeholder.png'
+shortDescription: 'Solution for tracking whether users have previously visited and are currently active on specific routes within an application using WebSockets'
+---
+
+Recently at work, I had a task to check if someone had previously visited a specific route in the application and is currently active on that page.
+
+I couldn't find a ready-made solution online, so I created my own solution using WebSockets.
+
+## Solution Gif
+
+![websocket solution](/blog/tracking-active-users/websocket.gif)
+
+
+<Question text="Why websockets" />
+
+WebSockets were chosen because they allow real-time updates and the ability to detect when someone leaves a page or when their computer shuts down. Our WebSocket server can track this information, enabling us to handle such events efficiently.
+
+## Libraries for websockets
+
+There are plenty of libraries available for WebSockets, but I chose to use the following
+
+- socket.io-client  (Frontend)
+- socket.io (Backend)
+
+
+## File structure
+
+Frontend
+
+```
+📦src   
+ ┣ 📂hook  
+ ┃ ┗ 📜useDocumentOccupied.ts  
+ ┣ 📂socket  
+ ┃ ┗ 📜socket.ts   
+ ┣ 📜App.tsx  
+ ┣ 📜Document.tsx  
+ ┣ 📜index.css  
+ ┣ 📜main.tsx  
+```
+
+Backend
+
+```
+📦src
+ ┣ 📜index.js   
+ ┗ 📜socket.js
+```
+
+## Frontend
+
+The frontend needs to connect to the WebSocket server and listen for events to display the relevant information. To keep the code clean, I created a custom hook where I pass the WebSocket instance and an **id** as parameters.
+
+```jsx
+ ┣ 📂socket  
+ ┃ ┗ 📜socket.ts 
+
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:9000'); 
+
+export default socket;
+
+```
+
+
+```jsx
+📜Document.tsx  
+
+import { useParams } from 'react-router-dom';
+import socket from './socket/socket';
+import useDocumentOccupied from './hook/useDocumentOccupied';
+
+export default function Document() {
+  const { id } = useParams();
+
+  const { message, messageOccupied, isSaved } = useDocumentOccupied(socket, id as string);
+
+  return (
+    <div>
+      <h1>document with id {id} </h1>
+      <h2>is released: {message}</h2>
+      <h2>is occupied: {messageOccupied}</h2>
+    </div>
+  );
+}
+
+
+```
+
+
+```jsx
+┣ 📂hook  
+┃ ┗ 📜useDocumentOccupied.ts  
+
+
+import { useState, useEffect } from 'react';
+import { Socket } from 'socket.io-client';
+
+function useDocumentOccupied(socket: Socket, id: string) {
+  const [message, setMessage] = useState('');
+  const [messageOccupied, setMessageOccupied] = useState('');
+  const [roomJoined, setRoomJoined] = useState(false);
+
+  useEffect(() => {
+    if (!roomJoined) {
+      socket.emit('join_document_room', `document-${id}`);
+      setRoomJoined(true);
+    }
+  }, [roomJoined, socket, id]);
+
+  useEffect(() => {
+    const handleReleased = (data: string) => {
+      setMessage(data);
+    };
+
+    const handleOccupied = (data: string) => {
+      setMessageOccupied(data);
+    };
+
+    socket.on('is_released', handleReleased);
+    socket.on('is_occupied', handleOccupied);
+    
+
+    return () => {
+      socket.off('is_released', handleReleased);
+      socket.off('is_occupied', handleOccupied);
+    };
+  }, [socket]);
+
+  return { message, messageOccupied };
+}
+
+export default useDocumentOccupied;
+```
+
+## Backend 
+
+The backend needs to create WebSocket rooms, handle all data, and listen for connect and disconnect events. We create an HTTP server and pass it as an argument to the handleSockets function.
+
+Setting Up the HTTP Server
+
+```js
+📜index.js  
+
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+
+const app = express();
+const PORT = 9000;
+import { handleSockets } from './socket.js'
+
+app.use(cors());
+
+const server = http.createServer(app);
+
+handleSockets(server);
+
+
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
+server.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+```
+
+
+The main challenge was that, upon disconnection, we only have the ID of the departing instance. To manage this, we created a roomsData structure to store all groups with their IDs. When a user disconnects, we check if the ID was part of any group. If the disconnecting ID was the first in the list for a particular document, we notify the next one that the document is released.
+
+
+```js
+📜socket.js
+
+import { Server } from 'socket.io';
+
+export const handleSockets = (server) => {
+  const io = new Server(server, {
+    cors: {
+      origin: 'http://localhost:5173',
+      methods: ['GET', 'POST'],
+    },
+  });
+
+  const roomsData = {};
+
+  function transformObject(input) {
+    let result = [];
+
+    for (const key in input) {
+      if (input.hasOwnProperty(key)) {
+        let obj = {
+          roomName: key,
+          connectedSocketIds: input[key],
+        };
+        result.push(obj);
+      }
+    }
+
+    return result;
+  }
+
+  io.on('connection', (socket) => {
+    socket.on('join_document_room', (data) => {
+      console.log(data, 'socket group');
+      socket.join(data);
+
+      if (!roomsData[data]) {
+        roomsData[data] = [];
+      } else {
+        io.to(socket.id).emit('is_occupied', 'Its occupied');
+      }
+
+      roomsData[data].push(socket.id);
+    });
+
+    socket.on('disconnect', (reason) => {
+      const transformedRoomsData = transformObject(roomsData);
+
+      transformedRoomsData.map((item) => {
+        if (item.connectedSocketIds[0] === socket.id) {
+          const room = io.sockets.adapter.rooms.has(item.roomName)
+            ? Array.from(io.sockets.adapter.rooms.get(item.roomName))
+            : false;
+
+          if (room) {
+            const releasedId = Array.from(room)[0];
+
+            io.to(releasedId).emit('is_released', 'this is released');
+          }
+        }
+
+        //clean up object
+        if (item.connectedSocketIds.includes(socket.id)) {
+          const indexToDelete = roomsData[item.roomName].indexOf(socket.id);
+
+          if (indexToDelete !== -1) {
+            roomsData[item.roomName].splice(indexToDelete, 1);
+          }
+
+          if (roomsData[item.roomName].length < 1) {
+            delete roomsData[item.roomName];
+          }
+        }
+      });
+    });
+  });
+};
+
+
+```
+
+## Conclusion
+
+This is the solution I came up with for the problem I faced. I'm not sure if it's the best approach, but it works for now. This is part of my learning journey, so if you see any potential improvements, please don't hesitate to reach out!

@@ -12,7 +12,6 @@ export default function page() {
   return (
     <div className="min-h-svh grid gap-16 md:gap-32">
       <Hero />
-
       <div className="grid gap-8 ">
         <h2 className="text-center">Recent posts</h2>
         <div className="grid gap-8 justify-items-center">
@@ -33,6 +32,7 @@ export default function page() {
           })}
         </div>
       </div>
+
       <div className="flex justify-center text-center">
         <Link href={"blog"}>
           <div className="grid justify-items-center gap-4">
