@@ -87,8 +87,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    env:
-      PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
     needs: build
     steps:
       - name: Deploy to GitHub Pages
