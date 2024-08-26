@@ -30,12 +30,20 @@ export default function Navigation() {
           <div className=" flex h-full  gap-16 mr-4">
             <nav className=" md:block h-full ">
               <ul className="flex gap-8 font-extralight h-full ">
-                <li className=" relative  group">
+                <li className=" relative flex gap-4 group">
                   <Link
                     href={"/blog"}
                     className="flex gap-1 items-center h-full text-white dark:text-black font-bold"
                   >
                     Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={"/projects"}
+                    className="flex gap-1 items-center h-full text-white dark:text-black font-bold"
+                  >
+                    Projects
                   </Link>
                 </li>
               </ul>
@@ -62,6 +70,15 @@ export default function Navigation() {
                     onClick={() => handleHamburger(false)}
                   >
                     Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={"/projects"}
+                    className="flex gap-1 items-center h-full text-black font-bold "
+                    onClick={() => handleHamburger(false)}
+                  >
+                    Projects
                   </Link>
                 </li>
               </ul>

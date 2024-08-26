@@ -37,7 +37,7 @@ export default function BlogCard(props: TBlogCard) {
           <Image
             src={`./${props.image}`}
             className="object-contain w-full h-fit object-center  dark:shadow-[0px_20px_21px_-12px_rgba(99,99,99,1)] shadow-[0px_20px_21px_-12px_rgba(66,68,90,1)] rounded-md"
-            alt="elo"
+            alt="blog card image"
             width={500}
             height={500}
           />
