@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
   },
   openGraph: {
-    images: ["https://tallguyjj.com/opengraph-image.jpg"],
+    images: ["https://tallguyjj.com/ogi.jpg"],
   },
 };
 
