@@ -8,7 +8,7 @@ import { Providers } from "./components/Providers";
 const font = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://jadczykjakub.github.io"),
+  metadataBase: new URL("https://tallguyjj.com"),
   title: {
     default: "Tallguy Jakub Jadczyk coding enthusiast",
     template: "%s - Tallguy Jakub Jadczyk coding enthusiast",
@@ -16,9 +16,6 @@ export const metadata: Metadata = {
   description: "Come and read my articles",
   twitter: {
     card: "summary_large_image",
-  },
-  openGraph: {
-    images: ["https://tallguyjj.com/ogi.jpg"],
   },
 };
 
