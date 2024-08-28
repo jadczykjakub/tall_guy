@@ -1,0 +1,233 @@
+---
+title: 'Useful Typescript techniques'
+publishedAt: 'August 28, 2024'
+author: 'Jakub Jadczyk'
+published: true
+imageSrc: 'blog/useful-typescript-techniques/placeholder.png'
+shortDescription: 'TypeScript features such as discriminated unions, const assertions, and generics'
+---
+
+## Discriminated Unions
+
+powerful feature in TypeScript that allow you to model a variable that can be one of several different types
+
+
+<Question text="What are union types " />
+
+
+A union type is a type that could be one of s
+everal types. For example, string | number
+
+
+<Question text="what is Discriminant Property" />
+ 
+A discriminant property is a common property that exists in all types within the union, but with different literal values
+
+
+```ts
+interface Circle {
+  kind: 'circle';
+  radius: number;
+}
+
+interface Square {
+  kind: 'square';
+  sideLength: number;
+}
+
+interface Rectangle {
+  kind: 'rectangle';
+  width: number;
+  height: number;
+}
+
+type Shape = Circle | Square | Rectangle;
+```
+
+
+Usually we can use it with **switch** and make sure all possible cases are handled, ensuring that every type in the discriminated union is accounted for
+
+```ts
+function area(shape: Shape): number {
+  switch (shape.kind) {
+    case 'circle':
+      return Math.PI * shape.radius ** 2;
+    case 'square':
+      return shape.sideLength ** 2;
+    case 'rectangle':
+      return shape.width * shape.height;
+      ...
+  }
+}
+```
+
+## Const Assertion
+
+In TypeScript, a _const assertion_ is a technique to define a value as a literal that should not change. This is done using the **as const** keyword. When a value is asserted as **const**, TypeScript treats it as read-only and narrows its type to the most specific type possible. Here's an example:
+
+```ts
+const Color = ["red", "green", "blue"] as const;
+
+type TColor = (typeof Color)[number];
+
+const blue: TColor = "blue"
+```
+
+In the above example, **Color** is defined as a constant array of literal string values **"red"**, **"green"**, and **"blue"**. By using **as const**, we tell TypeScript to infer the most specific types for the array elements, effectively creating a read-only tuple. The **TColor** type then extracts the literal types from this tuple, making *"red" | "green" | "blue"** the only possible values for **blue**.
+
+
+You might wonder, how does this differ from using a union type??
+
+```ts
+type Rgb = "red" | "green" | "blue";
+
+const red: Rgb = "red";
+```
+
+While both approaches define a limited set of values, **const** assertions offer additional advantages. The main reason to use **const** assertions is that they allow for more dynamic and iterable operations.
+
+```ts
+for (const item of Color) {
+    console.log(item)
+}
+```
+
+Const assertions can also be applied to objects,
+
+```ts
+const Product = {
+    title: "t-shirt",
+    price: "20$",
+    color: "red"
+} as const;
+
+
+let k: keyof typeof Product;
+
+for (k in Product){
+    console.log(`key = ${k}, value = ${Product[k]} `)
+```
+
+Using **keyof typeof Product**, we can dynamically iterate over the object's keys.
+
+
+or we can use it like that 
+
+```ts
+type TProduct = (typeof Product)[keyof typeof Product];
+
+const priceProduct: TProduct = Product.price;
+```
+
+## Generics
+
+Generics are a way to create components that work with multiple types instead of just a single one.
+
+For example, you have a function that takes a number as an argument and returns a number:
+
+```ts
+function ourFunction(param: number): number {
+  return param;
+}
+```
+
+After some time, you need to extend this function to take a string as well. Now, you have to rewrite the code to accommodate this change.
+
+<Question text="Why should we use any type" />
+
+We try to avoid using **any** because it results in losing type safety, which goes against the entire purpose of using types in TypeScript. Using **any** can lead to unexpected behavior and errors that are hard to track down.
+
+We dont do it!
+```ts
+function ourFunction(param: any): any {
+  return param;
+}
+```
+
+Thanks to **Generics**, we can achieve the desired flexibility while maintaining type safety.
+
+Imagine a scenario where you want a function to return whatever type of data you pass to it, without explicitly defining the return type. Here's how you can use generics to do this:
+
+```ts
+function ourFunction<T>(param: T): T {
+  return param;
+};
+
+```
+
+Now, we can pass different types as arguments, and the function will return exactly the type we intended to use:
+
+```ts
+ourFunction(12);
+
+ourFunction("hello world")
+```
+
+
+We can use generics also with 
+
+**Arrays**
+
+```ts
+function getFirstElement<T>(elements: T[]): T {
+    return elements[0];
+}
+
+```
+
+**Interfaces**
+
+```ts
+interface Pair<T, U> {
+    first: T;
+    second: U;
+}
+
+let stringNumberPair: Pair<string, number> = {
+    first: "hello",
+    second: 42,
+};
+
+let booleanArrayPair: Pair<boolean, boolean[]> = {
+    first: true,
+    second: [true, false, true],
+};
+```
+
+**Clasess**
+
+```ts
+class GenericBox<T> {
+    contents: T;
+
+    constructor(value: T) {
+        this.contents = value;
+    }
+
+    getContents(): T {
+        return this.contents;
+    }
+}
+
+let numberBox = new GenericBox<number>(123);
+console.log(numberBox.getContents()); // 123
+
+let stringBox = new GenericBox<string>("TypeScript");
+console.log(stringBox.getContents()); // TypeScript
+```
+
+
+**Keyof Constraint**
+
+```ts
+function getProperty<T, K extends keyof T>(obj: T, key: K) {
+    return obj[key];
+}
+
+let person = { name: "Alice", age: 25 };
+let name = getProperty(person, "name"); // Valid
+```
+
+## Conclusion
+
+Together, these features empower developers to write cleaner, more efficient, and scalable code, leveraging the full potential of TypeScript's type system.
