@@ -6,8 +6,8 @@ import readingTime from "reading-time";
 import ScrollProgressBar from "@/app/components/blog/ScrollProgressBar";
 import { stringToSlug } from "@/app/lib/utils";
 import Link from "next/link";
-import { cn } from "@/app/lib/utils";
 import { Metadata } from "next";
+import dayjs from "dayjs";
 
 export function generateStaticParams() {
   const blogs = getBlogs();
@@ -46,7 +46,9 @@ export default function page({ params }: { params: any }) {
           <div className="flex gap-2 items-center">
             <span>{blog.metadata.author}</span>
             <span className="w-1 h-1 rounded-full bg-primary"></span>
-            <span>{blog.metadata.publishedAt}</span>
+            <span>
+              📅 {dayjs(blog.metadata.publishedAt).format("DD.MM.YYYY")}
+            </span>
           </div>
           <div className="flex gap-2 items-center">
             <span>📖 {Math.ceil(statsTime.minutes)} min read</span>

@@ -39,6 +39,7 @@ export default function page() {
               ltr={index % 2 === 0}
               key={index}
               description={item.metadata.shortDescription}
+              data={item.metadata.publishedAt}
             />
           );
         })}

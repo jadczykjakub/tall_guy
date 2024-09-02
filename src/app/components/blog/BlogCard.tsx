@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/app/lib/utils";
+import dayjs from "dayjs";
 
 type TBlogCard = {
   image: string;
@@ -11,6 +12,7 @@ type TBlogCard = {
   description?: string;
   slug: string;
   ltr: boolean;
+  data: string;
 };
 
 export default function BlogCard(props: TBlogCard) {
@@ -44,10 +46,15 @@ export default function BlogCard(props: TBlogCard) {
         </div>
         <div className="flex flex-col items-start justify-center w-full ">
           <div className="flex flex-col md:flex-row justify-between  ">
-            <div className="flex gap-2 items-center">
+            <div className="flex flex-wrap gap-2 items-center">
               <p className="text-m">📖 {props.minutes} minutes</p>
               <span className="w-1 h-1 rounded-full bg-primary"></span>
               <p className="text-m">{props.words} words</p>
+              <span className="w-1 h-1 rounded-full bg-primary"></span>
+
+              <p className="text-m">
+                📅 {dayjs(props.data).format("DD.MM.YYYY")}
+              </p>
             </div>
           </div>
           <div className="mb-4">
