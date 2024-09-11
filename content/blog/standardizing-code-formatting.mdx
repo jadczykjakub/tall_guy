@@ -27,13 +27,13 @@ To implement this solution, we need to install three key tools:
 
 First, install Prettier in your project:
 
-```
+```bash
 npm install --save-dev --save-exact prettier
 ```
 
-Next, create a `.prettierrc` file in the root of your project and define your formatting rules. Here’s an example:
+Next, create a **.prettierrc** file in the root of your project and define your formatting rules. Here’s an example:
 
-```
+```json
 {
   "trailingComma": "es5",
   "tabWidth": 2,
@@ -45,7 +45,7 @@ Next, create a `.prettierrc` file in the root of your project and define your fo
 
 To check if Prettier is configured correctly, you can run the following command from your project’s root directory: 
 
-```
+```bash
 npx prettier . --write
 ```
 
@@ -57,7 +57,7 @@ Now, add some inconsistent formatting (extra tabs, spaces, etc.) to any file and
 
 Husky helps us add Git hooks to our project. Let’s install and set it up:
 
-```
+```bash
 npx husky init
 ```
 
@@ -70,13 +70,13 @@ This command creates a .husky folder in your project. Inside, you'll find a pre-
 
 Now, let's install Lint-Staged, a library that helps us perform actions on only the files that are staged for a commit.
 
-```
+```bash
 npm install --save-dev lint-staged
 ```
 
 After installing, we define which files should be processed by Prettier before a commit. Add the following configuration to your package.json:
 
-```
+```json
   "lint-staged": {
     "*.{js,css}": "prettier --write"
   }
@@ -86,7 +86,7 @@ This tells Lint-Staged to run prettier --write on all staged .js and .css files.
 
 To finalize, we need to add the following command to trigger Lint-Staged inside the pre-commit hook:
 
-```
+```bash
 npx lint-staged
 ```
 
@@ -94,8 +94,8 @@ npx lint-staged
 
 Here’s the full workflow in action:
 
-1. Add files to staging (`git add`).
-2. Attempt to commit (`git commit`).
+1. Add files to staging **git add**
+2. Attempt to commit **git commit**
 3. Pre-commit hook is triggered, running Lint-Staged.
 4. Prettier formats the staged files.
 5. If everything passes, the commit is completed.
