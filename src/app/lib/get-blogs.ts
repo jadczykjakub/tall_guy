@@ -14,6 +14,7 @@ type Metadata = {
   published: boolean;
   imageSrc: string;
   shortDescription: string;
+  category: string[];
 };
 
 export const getBlogs = () => {
@@ -30,7 +31,7 @@ export const getBlogs = () => {
       metadata: data as Metadata,
       content,
       slug: post.replace(/\.mdx?$/, ''),
-      tableOfContents:  getTableOfContent(content)
+      tableOfContents: getTableOfContent(content),
     };
   });
 };
@@ -52,7 +53,6 @@ export function getLatestBlogs() {
   return allBlogs.slice(0, 3);
 }
 
-
 function getTableOfContent(markdown: string) {
   const regXHeader = /#{2,6}.+/g;
   const headingArray = markdown.match(regXHeader)
@@ -60,8 +60,29 @@ function getTableOfContent(markdown: string) {
     : [];
   return headingArray?.map((heading) => {
     return {
-      level: heading.split("#").length - 1 - 2, // we starts from the 2nd heading that's why we subtract 2 and 1 is extra heading text
-      heading: heading.replace(/#{2,6}/, "").trim(),
+      level: heading.split('#').length - 1 - 2, // we starts from the 2nd heading that's why we subtract 2 and 1 is extra heading text
+      heading: heading.replace(/#{2,6}/, '').trim(),
     };
   });
+}
+
+export function getAllCategoriesFromBlog() {
+  let categories: string[] = [];
+  const blogs = getBlogs();
+
+  const categories2: { [key: string]: number } = {};
+
+  blogs.map((index) => {
+    index.metadata.category.map((categoryItem) => {
+      if (!categories.includes(categoryItem)) {
+        categories2[categoryItem] = 1;
+
+        categories.push(categoryItem);
+      } else {
+        categories2[categoryItem] += 1;
+      }
+    });
+  });
+
+  return categories2;
 }

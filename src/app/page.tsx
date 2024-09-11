@@ -42,6 +42,13 @@ export default function page() {
           </div>
         </Link>
       </div>
+
+      <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <input type="text" name="name" placeholder="Your Name" />
+        <input type="email" name="email" placeholder="Your Email" />
+        <textarea name="message" placeholder="Your Message"></textarea>
+        <button type="submit">Send Message</button>
+      </form>
     </div>
   );
 }

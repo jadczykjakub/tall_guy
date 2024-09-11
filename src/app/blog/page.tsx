@@ -1,9 +1,12 @@
 import React from "react";
-import { getBlogs } from "../lib/get-blogs";
+import { getBlogs, getAllCategoriesFromBlog } from "../lib/get-blogs";
 import Link from "next/link";
 import BlogCard from "../components/blog/BlogCard";
 import readingTime from "reading-time";
 import { Metadata } from "next";
+import BlogList from "../components/blog/BlogList";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -11,12 +14,14 @@ export const metadata: Metadata = {
 
 export default function page() {
   const blogs = getBlogs()
-    .filter((item) => item.metadata.published)
+    .filter((item) => item.metadata.category)
     .sort((a, b) => {
       const dateA = new Date(a.metadata.publishedAt!);
       const dateB = new Date(b.metadata.publishedAt!);
       return dateB.getTime() - dateA.getTime();
     });
+
+  const categories = getAllCategoriesFromBlog();
 
   return (
     <main className="grid gap-16 md:gap-32">
@@ -25,7 +30,11 @@ export default function page() {
         <p>I write posts because it is the best way to consolidate knowledge</p>
       </div>
 
-      <div className="grid gap-8">
+      <Suspense fallback={<Loading />}>
+        <BlogList blogs={blogs} categories={categories} />
+      </Suspense>
+
+      {/* <div className="grid gap-8">
         {blogs.map((item, index) => {
           const statsTime = readingTime(item.content);
 
@@ -43,7 +52,7 @@ export default function page() {
             />
           );
         })}
-      </div>
+      </div> */}
     </main>
   );
 }
