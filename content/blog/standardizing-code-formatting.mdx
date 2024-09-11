@@ -1,0 +1,108 @@
+---
+title: 'Standardizing Code Formatting with Prettier, Husky, and Lint-Staged'
+publishedAt: 'September 11, 2024'
+author: 'Jakub Jadczyk'
+published: true
+imageSrc: 'blog/standardizing-code-formatting/placeholder.png'
+shortDescription: 'Inconsistent code formatting can become a headache when working in a team. This post covers how to integrate Prettier, Husky, and Lint-Staged to enforce consistent formatting in your project.'
+---
+
+One of the most frustrating things when working on a project with multiple developers is inconsistent code formatting. One developer might use Visual Studio Code, another WebStorm, and a third something entirely different. These differences can lead to code inconsistencies, making the codebase messy and harder to maintain.
+
+## Solving the Formatting Issue
+
+A great solution to this problem is integrating Prettier, a code formatter, into your project. With Prettier, you can set formatting rules and ask other developers to apply them, for example, by enabling auto-save formatting in their editor. This ensures consistent formatting across the team.
+
+However, in my opinion, the best way to enforce a coding standard is by using Git hooks. Specifically, by applying formatting at the pre-commit stage for the files you want to commit. This way, files won’t enter the repository unless they are properly formatted. This process happens locally on the user’s machine, so only properly formatted files make it into the repo.
+
+## What You'll Need
+
+To implement this solution, we need to install three key tools:
+
+- **Prettier** – to format your code.
+- **Husky** – to perform actions at the pre-commit stage.
+- **Lint-Staged** – to run Prettier only on the files that are staged for commit.
+
+## Step 1: Install Prettier
+
+First, install Prettier in your project:
+
+```
+npm install --save-dev --save-exact prettier
+```
+
+Next, create a `.prettierrc` file in the root of your project and define your formatting rules. Here’s an example:
+
+```
+{
+  "trailingComma": "es5",
+  "tabWidth": 2,
+  "semi": false,
+  "singleQuote": true
+}
+
+```
+
+To check if Prettier is configured correctly, you can run the following command from your project’s root directory: 
+
+```
+npx prettier . --write
+```
+
+Now, add some inconsistent formatting (extra tabs, spaces, etc.) to any file and see if Prettier fixes it according to your defined rules.
+
+![prettier-write](/blog/standardizing-code-formatting/prettier-write.gif)
+
+## Step 2: Implement Husky
+
+Husky helps us add Git hooks to our project. Let’s install and set it up:
+
+```
+npx husky init
+```
+
+This command creates a .husky folder in your project. Inside, you'll find a pre-commit file, where you can list all the commands you want to run before a commit is made.
+
+![execute-pre-commit](/blog/standardizing-code-formatting/execute-pre-commit.gif)
+
+
+## Step 3: Set Up Lint-Staged
+
+Now, let's install Lint-Staged, a library that helps us perform actions on only the files that are staged for a commit.
+
+```
+npm install --save-dev lint-staged
+```
+
+After installing, we define which files should be processed by Prettier before a commit. Add the following configuration to your package.json:
+
+```
+  "lint-staged": {
+    "*.{js,css}": "prettier --write"
+  }
+```
+
+This tells Lint-Staged to run prettier --write on all staged .js and .css files.
+
+To finalize, we need to add the following command to trigger Lint-Staged inside the pre-commit hook:
+
+```
+npx lint-staged
+```
+
+### Full Workflow in Action
+
+Here’s the full workflow in action:
+
+1. Add files to staging (`git add`).
+2. Attempt to commit (`git commit`).
+3. Pre-commit hook is triggered, running Lint-Staged.
+4. Prettier formats the staged files.
+5. If everything passes, the commit is completed.
+
+
+![full-flow](/blog/standardizing-code-formatting/full-flow.gif)
+
+## Conclusion
+
+This is a simple workflow to help you standardize code formatting in your repository. There are other approaches, such as using ESLint in combination with Prettier. With Husky and Lint-Staged, you can create custom workflows tailored to your team’s needs. This setup ensures that your code remains clean, readable, and consistent across all contributions.
