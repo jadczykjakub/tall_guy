@@ -6,10 +6,12 @@ const nextConfig = {
       use: ['@svgr/webpack'],
     });
 
+    config.resolve.alias.canvas = false;
+
     return config;
   },
   transpilePackages: ['next-mdx-remote'],
-  basePath: "",
+  basePath: '',
   output: 'export',
   images: {
     unoptimized: true,

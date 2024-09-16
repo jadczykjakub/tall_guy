@@ -6,7 +6,7 @@ import { MDXComponents } from "mdx/types";
 // import remarkA11yEmoji from '@fec/remark-a11y-emoji';
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { highlight } from "sugar-high";
-import { cn } from "@/app/lib/utils";
+import { cn } from "@lib/utils";
 import Pre from "./Pre";
 import { Callout } from "./Callout";
 import { CustomLink } from "./CustomLink";
@@ -20,7 +20,7 @@ import ReactMarkdown from "react-markdown";
 // } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import Question from "@/app/components/blog/Question";
+import Question from "@components/blog/Question";
 
 const CodeBlock = (props: any) => {
   let { className } = props;

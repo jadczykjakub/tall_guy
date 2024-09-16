@@ -1,8 +1,7 @@
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { cn } from "@/app/lib/utils";
-import GithubIcon from "@/../public/svg/github.svg";
+import { cn } from "@lib/utils";
+import GithubIcon from "@public/svg/github.svg";
 
 type TProjectCard = {
   image: string;

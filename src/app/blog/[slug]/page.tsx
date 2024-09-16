@@ -1,10 +1,10 @@
 import React from "react";
-import { getBlogs } from "@/app/lib/get-blogs";
+import { getBlogs } from "@lib/get-blogs";
 import { notFound } from "next/navigation";
-import { CustomMDX } from "@/app/components/mdx/mdx";
+import { CustomMDX } from "@components/mdx/mdx";
 import readingTime from "reading-time";
-import ScrollProgressBar from "@/app/components/blog/ScrollProgressBar";
-import { stringToSlug } from "@/app/lib/utils";
+import ScrollProgressBar from "@components/blog/ScrollProgressBar";
+import { stringToSlug } from "@lib/utils";
 import Link from "next/link";
 import { Metadata } from "next";
 import dayjs from "dayjs";

@@ -1,5 +1,5 @@
 import React from "react";
-import BlogIcon from "@/../public/svg/exclamation-question-mark.svg";
+import BlogIcon from "@public/svg/exclamation-question-mark.svg";
 
 export default function Question({ text }: { text: string }) {
   return (

@@ -1,9 +1,9 @@
 import React from "react";
 import { getLatestBlogs } from "./lib/get-blogs";
 import Link from "next/link";
-import BlogCard from "@/app/components/blog/BlogCard";
-import Hero from "@/app/components/Hero";
-import BlogIcon from "@/../public/svg/blog-icon.svg";
+import BlogCard from "@components/blog/BlogCard";
+import Hero from "@components/Hero";
+import BlogIcon from "@public/svg/blog-icon.svg";
 import readingTime from "reading-time";
 
 export default function page() {

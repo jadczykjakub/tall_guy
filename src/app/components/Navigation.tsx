@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { Twirl as Hamburger } from "hamburger-react";
-import { cn } from "@/app/lib/utils";
+import { cn } from "@lib/utils";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import ThemeSwitcher from "./ThemeSwitcher/ThemeSwitcher";
 import { Button, Dropdown } from "@nextui-org/react";
-import Logo from "@/../public/svg/tallguy.svg";
+import Logo from "@public/svg/tallguy.svg";
 
 export default function Navigation() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -44,6 +44,14 @@ export default function Navigation() {
                     className="flex gap-1 items-center h-full text-white dark:text-black font-bold"
                   >
                     Projects
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={"/certificates"}
+                    className="flex gap-1 items-center h-full text-white dark:text-black font-bold"
+                  >
+                    Certificates
                   </Link>
                 </li>
               </ul>
