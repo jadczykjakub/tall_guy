@@ -15,7 +15,7 @@ export default function page() {
         <h1>Certificates</h1>
       </div>
 
-      <div className="grid grid-cols-4 ">
+      <div className="grid md:grid-cols-4 ">
         {certificates.map((item, index) => {
           return <CertificateCard key={index} {...item.metadata} />;
         })}
