@@ -74,7 +74,7 @@ export default function Navigation() {
                 <li className="">
                   <Link
                     href={"/blog"}
-                    className="flex gap-1 items-center h-full text-black font-bold "
+                    className="flex gap-1 items-center h-full text-white dark:text-black font-bold "
                     onClick={() => handleHamburger(false)}
                   >
                     Blog
@@ -83,10 +83,19 @@ export default function Navigation() {
                 <li>
                   <Link
                     href={"/projects"}
-                    className="flex gap-1 items-center h-full text-black font-bold "
+                    className="flex gap-1 items-center h-full text-white dark:text-black font-bold "
                     onClick={() => handleHamburger(false)}
                   >
                     Projects
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={"/certificates"}
+                    className="flex gap-1 items-center h-full text-white dark:text-black font-bold "
+                    onClick={() => handleHamburger(false)}
+                  >
+                    Certificates
                   </Link>
                 </li>
               </ul>
