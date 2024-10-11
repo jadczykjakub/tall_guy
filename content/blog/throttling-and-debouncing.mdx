@@ -1,0 +1,90 @@
+---
+title: 'Throttling and Debouncing'
+publishedAt: 'October 11, 2024'
+author: 'Jakub Jadczyk'
+published: true
+imageSrc: 'blog/throttling-and-debouncing/placeholder.png'
+shortDescription: 'Throttling and debouncing are methods used to regulate how often a function is executed, especially in cases where frequent events (such as user interactions) could result in an excessive number of function calls.'
+---
+
+Throttling and debouncing are methods used to regulate how often a function is executed, especially in cases where frequent events (such as user interactions) could result in an excessive number of function calls, potentially affecting performance.
+
+## Throttling
+Throttling controls the frequency of function execution within a specified time frame. It ensures the function is invoked at consistent intervals, no matter how often the event triggering it occurs.
+
+
+![throttling image](/blog/throttling-and-debouncing/throttle.png)
+
+## Debouncing
+
+Debouncing postpones the execution of a function until a set amount of time has elapsed since the last event. It is ideal for situations where you want to wait for a pause in activity before running the function, preventing multiple rapid calls in quick succession.
+
+![throttling image](/blog/throttling-and-debouncing/debounce.png)
+
+
+
+## Use case Throttling
+
+In this example, a throttled version of the handleClick function is created using a throttle function. The handleClick will only be called once every 1000 milliseconds (1 second), even if the button is clicked multiple times in quick succession.
+
+```jsx
+function throttle(func, limit) {
+  let inThrottle;
+  return function (...args) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+} 
+```
+
+```jsx
+const handleClick = () => {
+  console.log("Button clicked!");
+};
+const throttledClick = throttle(handleClick, 1000); // Only allow a click once every second
+```
+`
+## Use case Debouncing
+
+```jsx
+function debounce(func, delay) {
+  let timeoutId;
+
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+}
+```
+
+```jsx
+function fetchSearchResults(query) {
+  console.log(`Fetching results for: ${query}`);
+  // Simulate an API call
+  // You could use fetch or axios here
+}
+
+// Get the search input element
+const searchInput = document.getElementById('search-input');
+
+// Create a debounced version of the fetch function
+const debouncedFetch = debounce(fetchSearchResults, 300);
+
+// Attach the event listener to the input
+searchInput.addEventListener('input', (event) => {
+  const query = event.target.value;
+  debouncedFetch(query);
+});
+```
+
+In this example, a debounced version of the fetchSearchResults function is created using a debounce function. The fetchSearchResults will only be called after the user has stopped typing for 300 milliseconds, regardless of how quickly they input text in the search field. This approach minimizes unnecessary API calls and optimizes performance by waiting until the user has completed their input.
+
+
+## Conclusion
+
+Throttling and debouncing are essential techniques for optimizing performance in applications where functions are triggered by frequent events, such as user interactions.
